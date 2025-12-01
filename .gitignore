@@ -1,0 +1,14 @@
+*build*/*
+extern/polyscope*
+extern/.*
+extern/mat_modules*
+extern/libmat*
+extern/geogram*
+extern/cli11*
+src/kd_merge/*build*
+.vscode*
+houdini*/*
+out*/*
+*DS_Store
+script/*record.*
+script/*.ini
