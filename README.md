@@ -64,6 +64,8 @@ The input of our method is the tetrahedral mesh in **.msh** format, one can use 
 ```bash
 $  ./bin/VolumeVoronoiGPU -i <tet_mesh.msh> -o
 ```
+Note that, here we use a different sampling strategy for non-cad models to make it run faster than using the restricted power cells sampling shown in the paper.
+
 For example:
 ```bash
 $  ./bin/VolumeVoronoiGPU -i ../data_test/chair.off_.msh -o
