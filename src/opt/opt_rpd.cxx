@@ -14,6 +14,14 @@ OPT_RPD::~OPT_RPD() {
   delete _mmesh;
 }
 
+void OPT_RPD::release_pointers() {
+  _rpd3d.release_pointers();
+  _tet_mesh = nullptr;
+  _sf_mesh = nullptr;
+  _all_medial_spheres = nullptr;
+  _mmesh = nullptr;
+}
+
 void OPT_RPD::init(const TetMesh* _tet_mesh, const SurfaceMesh* _sf_mesh,
                    const Parameter* _params,
                    std::vector<MedialSphere>* _all_medial_spheres,

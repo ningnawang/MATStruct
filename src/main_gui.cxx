@@ -1,11 +1,13 @@
 
 #include "main_gui.h"
 
+#ifdef MATSTRUCT_WITH_VISUALIZATION
 #include <polyscope/curve_network.h>
 #include <polyscope/point_cloud.h>
 #include <polyscope/polyscope.h>
 #include <polyscope/surface_mesh.h>
 #include <polyscope/volume_mesh.h>
+#endif  // MATSTRUCT_WITH_VISUALIZATION
 
 #include "eval/mesh_eval.h"
 #include "fix_extf.h"
@@ -48,6 +50,18 @@ MainGuiWindow::~MainGuiWindow() {
   this->instance_ = nullptr;
 }
 
+void MainGuiWindow::release_pointers() {
+  params = nullptr;
+  tet_mesh = nullptr;
+  sf_mesh = nullptr;
+  all_medial_spheres = nullptr;
+  mmesh = nullptr;
+  spheres_to_fix = nullptr;
+  rt = nullptr;
+  rpd3d = nullptr;
+  opt_rpd = nullptr;
+}
+
 void MainGuiWindow::set_params(Parameter& _params) { params = &_params; }
 void MainGuiWindow::set_tet_mesh(TetMesh& _tet_mesh) { tet_mesh = &_tet_mesh; }
 void MainGuiWindow::set_sf_mesh(const SurfaceMesh& _sf_mesh) {
@@ -85,7 +99,9 @@ int MainGuiWindow::run_topo_fix_itr(
                      is_debug /*is_debug*/);
 
   if (spheres_to_fix.empty()) {
+#ifdef MATSTRUCT_WITH_VISUALIZATION
     polyscope::info("Topology check has passed!");
+#endif
     return 0;
   }
 
@@ -95,8 +111,10 @@ int MainGuiWindow::run_topo_fix_itr(
       spheres_to_fix, all_medial_spheres, is_debug /*is_debug*/);
   // int num_added = all_medial_spheres.size() - old_size;
 
+#ifdef MATSTRUCT_WITH_VISUALIZATION
   polyscope::info("Topo check change " + std::to_string(num_sphere_change) +
                   " spheres");
+#endif
   num_topo_itr++;
   return num_sphere_change;
 }
@@ -126,7 +144,9 @@ void MainGuiWindow::run_mmesh_generator(
 
   // compute medial mesh quality
   double tri_quality = eval_triangle_quality(mmesh);
+#ifdef MATSTRUCT_WITH_VISUALIZATION
   polyscope::info("Done calculating medial mesh");
+#endif
 }
 
 int MainGuiWindow::run_fix_geo_itr(
@@ -141,7 +161,9 @@ int MainGuiWindow::run_fix_geo_itr(
                        this->fix_geo_samples_clostprim, is_debug /*is_debug*/);
   int num_added = all_medial_spheres.size() - old_size;
 
+#ifdef MATSTRUCT_WITH_VISUALIZATION
   polyscope::info("Geo check added " + std::to_string(num_added) + " spheres");
+#endif
   num_geo_itr++;
   return num_added;
 }
@@ -159,8 +181,10 @@ int MainGuiWindow::run_extf_fix_itr(
     int num_corners = init_corner_spheres(instance_->num_itr_global, tet_mesh,
                                           all_medial_spheres);
     mmesh.is_corner_spheres_created = true;
+#ifdef MATSTRUCT_WITH_VISUALIZATION
     polyscope::info("EXTF check add " + std::to_string(num_corners) +
                     " corners");
+#endif
     num_extf_itr++;
     return num_corners;
   }
@@ -171,8 +195,10 @@ int MainGuiWindow::run_extf_fix_itr(
       sf_mesh, tet_mesh.tet_vs_lfs2tvs_map, tet_mesh.fl2corner_sphere,
       all_medial_spheres, is_debug /*is_debug*/);
   int num_added = all_medial_spheres.size() - old_size;
+#ifdef MATSTRUCT_WITH_VISUALIZATION
   polyscope::info("EXTF check changed " + std::to_string(num_changed) +
                   " spheres");
+#endif
   num_extf_itr++;
   return num_changed;
 }
@@ -192,8 +218,10 @@ int MainGuiWindow::run_intf_fix_itr(
 
   // update T2 by TN
   int num_updated = 0;
+#ifdef MATSTRUCT_WITH_VISUALIZATION
   polyscope::info("INTF check added " + std::to_string(num_added) +
                   ", updated " + std::to_string(num_updated) + " spheres");
+#endif
   num_intf_itr++;
   return num_added + num_updated;
 }
@@ -455,6 +483,7 @@ void MainGuiWindow::update_rpd_after_partial() {
 }
 
 void MainGuiWindow::show(bool is_compute_rpd) {
+#ifdef MATSTRUCT_WITH_VISUALIZATION
   // a few camera options
   polyscope::view::upDir = polyscope::UpDir::ZUp;
 
@@ -487,6 +516,7 @@ void MainGuiWindow::show(bool is_compute_rpd) {
 
   // Show the GUI
   polyscope::show();
+#endif  // MATSTRUCT_WITH_VISUALIZATION
 }
 
 void MainGuiWindow::auto_eval_add_medge_len(const int itr_print) {
@@ -764,6 +794,7 @@ void MainGuiWindow::proj_sphere_SQEM_clean_extf() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void MainGuiWindow::show_result_convex_cells(
     std::vector<ConvexCellHost>& cells_to_show, bool is_slice_plane) {
+#ifdef MATSTRUCT_WITH_VISUALIZATION
   std::vector<cfloat3> voro_points;
   std::vector<float> voro_points_num_adjs;
   std::vector<std::array<int, 4>> voro_tets;  // tet
@@ -804,9 +835,11 @@ void MainGuiWindow::show_result_convex_cells(
   my_mesh->addCellColorQuantity("site_color", voro_colors)->setEnabled(true);
   my_mesh->addCellScalarQuantity("euler", voro_tets_euler);
   my_mesh->addCellScalarQuantity("cell_id", voro_tets_cell_ids);
+#endif  // MATSTRUCT_WITH_VISUALIZATION
 }
 
 void MainGuiWindow::show_tet_mesh(const TetMesh& tet_mesh, bool is_shown_meta) {
+#ifdef MATSTRUCT_WITH_VISUALIZATION
   std::vector<std::array<float, 3>> tet_vertices_new;
   std::vector<std::array<int, 4>> tet_indices_new;
   std::vector<int> tet_ids;
@@ -868,10 +901,12 @@ void MainGuiWindow::show_tet_mesh(const TetMesh& tet_mesh, bool is_shown_meta) {
   my_se_edges->addEdgeScalarQuantity("fl_id", se_fl_ids)->setEnabled(true);
   my_se_edges->addEdgeScalarQuantity("fe_id", se_fe_ids)->setEnabled(true);
   my_se_edges->setEnabled(false);
+#endif  // MATSTRUCT_WITH_VISUALIZATION
 }
 
 void MainGuiWindow::show_medial_mesh(const MedialMesh& mmesh,
                                      std::string mmname) {
+#ifdef MATSTRUCT_WITH_VISUALIZATION
   if (mmesh.vertices == nullptr) return;
   const auto& mspheres = *(mmesh.vertices);
   const auto& mfaces = mmesh.faces;
@@ -904,4 +939,5 @@ void MainGuiWindow::show_medial_mesh(const MedialMesh& mmesh,
   medial_mesh->setBackFacePolicy(polyscope::BackFacePolicy::Identical);
   medial_mesh->addVertexScalarQuantity("radius", mat_radius,
                                        polyscope::DataType::MAGNITUDE);
+#endif  // MATSTRUCT_WITH_VISUALIZATION
 }

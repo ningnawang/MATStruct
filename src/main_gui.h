@@ -83,6 +83,7 @@ class MainGuiWindow {
   void update_rpd_after_partial();
   void show(bool is_compute_rpd = true);
   static void callbacks();
+  void release_pointers();
 
   // main iteration functions
   int num_itr_global = 0;

@@ -51,10 +51,12 @@ if(NOT TARGET CLI11::CLI11)
 endif()
 
 # polyscope
-if(NOT TARGET polyscope)
-    rpd_download_polyscope()
-    add_subdirectory(${EXTERNAL_DIR}/polyscope)
-endif()
+#if(MATSTRUCT_WITH_VISUALIZATION)
+#    if(NOT TARGET polyscope)
+#        rpd_download_polyscope()
+#        add_subdirectory(${EXTERNAL_DIR}/polyscope)
+#    endif()
+#endif()
 
 # json
 if(NOT TARGET nlohmann_json::nlohmann_json)

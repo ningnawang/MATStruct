@@ -51,6 +51,7 @@ int main(int argc, char** argv) {
   setup_signal_handlers();
   std::srand(RAN_SEED);  // set random seed
   std::string tet_mesh_file;
+  std::string output_dir = "../out";
   int poisson_diag = 40;
   Parameter params;
 
@@ -72,6 +73,8 @@ int main(int argc, char** argv) {
   app.add_option("--ce,--concave", params.thres_concave,
                  "Concave angle threshold in degrees, bigger is more "
                  "sensitive. (double, optional, default=60.)");
+  app.add_option("-d,--output-dir", output_dir,
+                 "Output directory (default: ../out)");
 
   try {
     app.parse(argc, argv);
@@ -79,11 +82,14 @@ int main(int argc, char** argv) {
     return app.exit(e);
   }
 
+  set_output_dir(output_dir);
+
   params.is_run_cad = !params.is_run_organic;
   if (params.is_run_organic) {
     params.thres_concave = 70.;
     params.is_sample_rpd = false;
   }
+  printf("output_dir: %s\n", g_output_dir.c_str());
   printf("setting poisson_diag to %d\n", poisson_diag);
   printf("is_run_cad: %d, is_run_organic: %d\n", params.is_run_cad,
          params.is_run_organic);
@@ -243,7 +249,16 @@ int main(int argc, char** argv) {
   }
   main_gui.auto_fix_topo_and_clean();
   main_gui.auto_opt_rpd_only_particle();
+#ifdef MATSTRUCT_WITH_VISUALIZATION
   main_gui.show(true /*is_compute_rpd*/);
+#endif
+
+  // Release pointers before stack unwinds to prevent destructors from
+  // calling delete on stack-allocated objects passed via set_*() / init().
+  opt_rpd.get_rpd3d()->release_pointers();
+  opt_rpd.release_pointers();
+  mmesh.clear();
+  main_gui.release_pointers();
 
   cudaDeviceReset();
   if (initptr != nullptr) cudaFree(initptr);

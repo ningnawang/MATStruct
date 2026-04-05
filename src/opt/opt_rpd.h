@@ -56,6 +56,7 @@ class OPT_RPD {
             const Parameter* _params,
             std::vector<MedialSphere>* _all_medial_spheres, MedialMesh* _mmesh);
   void set_file_name_no_ext(std::string _name_no_ext);
+  void release_pointers();
 
   // for debug
   std::vector<Vector3> _sphere_centers_old;  // 3D (x,y,z)

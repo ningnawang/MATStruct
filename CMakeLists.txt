@@ -43,6 +43,7 @@ option(AUTO_DOWNLOAD "Auto download dependencies" ON)
 # enable GPU for libmat
 option(LIBMAT_IS_USE_GPU    "Enable GPU for RPD" ON)
 option(LIBMAT_IS_BUILD_TEST "Build tests, either CXX or CUDA" OFF)
+option(MATSTRUCT_WITH_VISUALIZATION "Enable polyscope visualization (requires display)" OFF)
 include(matstruct_dependencies)
 add_subdirectory(extern/BGAL)
 add_subdirectory(src/knn)
@@ -73,6 +74,9 @@ target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
     >)
 # target_compile_features(${PROJECT_NAME} PUBLIC cuda_std_17)
 target_compile_definitions(${PROJECT_NAME} PUBLIC -Dgeogram_EXPORTS)
+if(MATSTRUCT_WITH_VISUALIZATION)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC -DMATSTRUCT_WITH_VISUALIZATION)
+endif()
 
 # add common_headers include
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -100,7 +104,7 @@ target_link_libraries(${PROJECT_NAME}
     #### extern lib
     general cuda
     general cublas
-    optimized polyscope
+    $<$<BOOL:${MATSTRUCT_WITH_VISUALIZATION}>:polyscope>
     optimized geogram
     optimized ZLIB::ZLIB
     optimized CGAL::CGAL
