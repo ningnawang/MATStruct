@@ -132,3 +132,13 @@ element edge xxx
 We recommend using **Blender** to view the 3D medial meshes' in obj format, as it shows correct statistics of not only vertices and faces, but also all edges, including 1d curves. If you open the obj/OBJ file with **MeshLab**, only vertices and faces shows correctly, however, 1D curves will **NOT** be shown/counted in MeshLab.
 
 
+### Please cite our paper:
+```
+@inproceedings{wang2025matstruct,
+  title={MATStruct: High-quality Medial Mesh Computation via Structure-aware Variational Optimization},
+  author={Wang, Ningna and Xu, Rui and Yin, Yibo and Zhong, Zichun and Komura, Taku and Wang, Wenping and Guo, Xiaohu},
+  booktitle={Proceedings of the SIGGRAPH Asia 2025 Conference Papers},
+  pages={1--12},
+  year={2025}
+}
+```
