@@ -162,6 +162,7 @@ function(download_project)
                    "${DL_ARGS_DOWNLOAD_DIR}/CMakeLists.txt")
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}"
                         -D "CMAKE_MAKE_PROGRAM:FILE=${CMAKE_MAKE_PROGRAM}"
+                        -D "CMAKE_POLICY_VERSION_MINIMUM=3.5"
                         .
                     RESULT_VARIABLE result
                     ${OUTPUT_QUIET}
