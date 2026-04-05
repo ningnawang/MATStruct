@@ -1,5 +1,13 @@
 #include "io_wrapper.h"
 
+std::string g_output_dir = "../out";
+
+void set_output_dir(const std::string& dir) {
+  g_output_dir = dir;
+  while (!g_output_dir.empty() && g_output_dir.back() == '/')
+    g_output_dir.pop_back();
+}
+
 // helper function
 void get_mat_clean_and_map(const MedialMesh& mat, std::map<int, int>& map_matv,
                            std::map<int, int>& map_mate,
@@ -223,7 +231,7 @@ bool export_mesh_obj(const std::string obj_file_path,
 // 2. T is either Vector3 or Vector4
 // 3. if face_ids is given, then assign color based on the id
 template <typename T>
-bool export_mesh_obj(const std::string folder_name, const std::string& filename,
+void export_mesh_obj(const std::string folder_name, const std::string& filename,
                      const std::vector<T>& vertices,
                      const std::vector<aint2>& edges,
                      const std::vector<aint3>& faces,
@@ -324,7 +332,7 @@ bool export_mat_feature_edge_obj(const std::string& folder_name,
 // // conains some deleted vertices, edges, faces
 // // not cleaned ma
 // void export_ma_and_struct_all(const std::string& maname, MedialMesh& mat) {
-//   std::string folder_name = "../out/" + maname + "/mat";
+//   std::string folder_name = g_output_dir + "/" + maname + "/mat";
 //   create_dir(folder_name);
 //   std::string ma_name_full =
 //       folder_name + "/mat_" + maname + "_" + get_timestamp() +
@@ -501,7 +509,7 @@ void compute_and_save_shrink_mstructures(const std::string& maname,
                                          const double shrinkFactor) {
   compute_shrink_mstructures(mmesh, shrinkVertices, shrinkFaces, faceStructIds,
                              shrinkFactor);
-  std::string folder_name = "../out/" + maname + "/mat/";
+  std::string folder_name = g_output_dir + "/" + maname + "/mat/";
   create_dir(folder_name);
   std::string ma_name_full =
       folder_name + "mat_shrink_" + maname + "_" + get_timestamp() + ".obj";
@@ -516,7 +524,7 @@ bool export_convex_cells_obj(
     std::string folder_name, std::string rpd_name, const int max_sf_fid,
     const bool is_boundary_only) {
   if (folder_name.empty()) {
-    folder_name = "../out/" + rpd_name + "/rpd/";
+    folder_name = g_output_dir + "/" + rpd_name + "/rpd/";
   }
   create_dir(folder_name);
 
@@ -548,7 +556,7 @@ bool export_convex_cells_obj(
 // each tet has its own vertices copy
 void export_input_tet_obj(const std::string& tet_name,
                           const TetMesh& tet_mesh) {
-  std::string folder_name = "../out/" + tet_name + "/input/";
+  std::string folder_name = g_output_dir + "/" + tet_name + "/input/";
   create_dir(folder_name);
 
   static const int tet_face_indices[4][3] = {
@@ -593,7 +601,7 @@ void export_ma_junctions(const std::string& folder_name,
 }
 
 void export_ma_obj(const std::string& maname, const MedialMesh& mat) {
-  std::string folder_name = "../out/" + maname + "/mat/";
+  std::string folder_name = g_output_dir + "/" + maname + "/mat/";
   create_dir(folder_name);
 
   std::map<int, int> map_matv, map_mate, map_matf;
@@ -617,7 +625,7 @@ void export_ma_obj(const std::string& maname, const MedialMesh& mat) {
 void export_ma_obj_itr(std::string& folder_name, const std::string& maname,
                        const MedialMesh& mat) {
   if (folder_name.empty()) {
-    folder_name = "../out/" + maname + "/mmesh_itr/";
+    folder_name = g_output_dir + "/" + maname + "/mmesh_itr/";
   }
   create_dir(folder_name);
 
@@ -635,7 +643,7 @@ void export_ma_obj_itr(std::string& folder_name, const std::string& maname,
 }
 
 void export_ma_obj_only(const std::string& maname, const MedialMesh& mat) {
-  std::string folder_name = "../out/" + maname + "/mat/";
+  std::string folder_name = g_output_dir + "/" + maname + "/mat/";
   create_dir(folder_name);
 
   std::map<int, int> map_matv, map_mate, map_matf;
@@ -665,7 +673,7 @@ void export_ma_obj_only(const std::string& maname, const MedialMesh& mat) {
  * f1/e1/v1 f2/e2/v2 f3/e3/v3 f4/e4/v3 ... fn/en/
  */
 void export_ma_and_struct_clean(const std::string& maname, MedialMesh& mat) {
-  std::string folder_name = "../out/" + maname + "/mat/";
+  std::string folder_name = g_output_dir + "/" + maname + "/mat/";
   create_dir(folder_name);
 
   std::map<int, int> map_matv, map_mate, map_matf;
@@ -794,7 +802,7 @@ void save_mstruct_houdini_split_sheet_only_helper(
     std::map<int, std::set<int>>& map_vid_old_to_new_copies /*global*/) {
   if (mmesh.vertices == nullptr) return;
   if (mmesh.mstructure.empty()) return;
-  std::string folder_name = "../out/" + mstruct_name + "/mstruct/";
+  std::string folder_name = g_output_dir + "/" + mstruct_name + "/mstruct/";
   create_dir(folder_name);
   std::string mstruct_sheet_path =
       folder_name + "mstruct_sheet_" + mstruct_name + "_" + get_timestamp();
@@ -914,7 +922,7 @@ bool load_mstruct_jun_seam_sheet_helper(
 //  2. save all types of mstructs, for each vertex, save its copies in step1.
 bool save_mstruct_houdini(const MedialMesh& mmesh, std::string mstruct_name,
                           const bool is_store_sheets_split, bool is_debug) {
-  std::string folder_name = "../out/" + mstruct_name + "/mstruct/";
+  std::string folder_name = g_output_dir + "/" + mstruct_name + "/mstruct/";
   create_dir(folder_name);
   std::string mstruct_all_path =
       folder_name + "mstruct_all_" + mstruct_name + "_" + get_timestamp();
@@ -995,7 +1003,7 @@ void export_spheres_normals(const MedialMesh& mmesh,
   if (mmesh.vertices == nullptr) return;
   const auto& all_medial_spheres = *mmesh.vertices;
 
-  std::string folder_name = "../out/" + maname + "/normals/";
+  std::string folder_name = g_output_dir + "/" + maname + "/normals/";
   create_dir(folder_name);
   std::string normals_path =
       folder_name + "normals_" + maname + "_" + get_timestamp() + ".normal";
@@ -1051,7 +1059,7 @@ bool export_centers_xyz(const std::string& folder_name,
 }
 
 void export_MSER(const std::string& filename, const double mser) {
-  std::string out = "../out/MSER.txt";
+  std::string out = g_output_dir + "/MSER.txt";
   std::ofstream outFile;
   outFile.open(out, std::ios::app);  // append
   outFile << filename << ": " << mser << std::endl;
@@ -1059,7 +1067,7 @@ void export_MSER(const std::string& filename, const double mser) {
 }
 
 void export_TQ(const std::string& filename, const double tq) {
-  std::string out = "../out/TQ.txt";
+  std::string out = g_output_dir + "/TQ.txt";
   std::ofstream outFile;
   outFile.open(out, std::ios::app);  // append
   outFile << filename << ": " << tq << std::endl;

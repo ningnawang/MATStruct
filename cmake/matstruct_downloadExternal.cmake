@@ -89,8 +89,8 @@ endfunction()
 # libmat 
 function(rpd_download_libmat)
 	rpd_download_project(libmat
-		# GIT_REPOSITORY https://github.com/ningnawang/libmat.git
-		GIT_REPOSITORY git@github.com:ningnawang/libmat.git
+		 GIT_REPOSITORY https://github.com/ningnawang/libmat.git
+		#GIT_REPOSITORY git@github.com:ningnawang/libmat.git
 		GIT_TAG main
 	)
 endfunction()

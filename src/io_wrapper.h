@@ -1,6 +1,12 @@
+#include <string>
+
 #include "io.h"
 #include "io_cuda.h"
 #include "io_utils.hpp"
+
+// Global output directory (default "../out"). Set via set_output_dir().
+extern std::string g_output_dir;
+void set_output_dir(const std::string& dir);
 
 // // for exporting more info
 // void export_ma_and_struct_all(const std::string& maname, MedialMesh& mat);
